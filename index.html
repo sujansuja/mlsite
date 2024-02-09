@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+
+        .images-cont img {
+            max-width: 100px;
+            max-height: 100px;
+            display: block;
+            min-width: 100px;
+            min-height: 100px;
+        }
+
+        /* width */
+        .images-cont::-webkit-scrollbar {
+            /* width: 2px; */
+            height: 8px;
+        }
+
+        /* Track */
+        .images-cont::-webkit-scrollbar-track {
+            background: #dddddd;
+        }
+
+        /* Handle */
+        .images-cont::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        .images-cont::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .images-cont {
+            color: red;
+            font-size: 20px;
+            /* background: blue; */
+            /* border: 1px solid red; */
+            display: flex;
+            place-items: center;
+            gap: 0 5px;
+            overflow-x: auto;
+            /* max-height: 110px; */
+        }
+
+        .img-cont {
+            position: relative;
+            max-width: 100px;
+            /* border: 1px solid blue; */
+            display: flex;
+            flex-direction: row;
+
+        }
+
+        .img-cont button {
+            position: absolute;
+            right: 2px;
+            top: 2px;
+            color: red;
+            background-color: transparent;
+            outline: none;
+            border: none;
+            font-weight: bolder;
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .img-cont button:hover {
+            background: red;
+            color: white;
+
+        }
+
+        .image-select-cont {
+            /* border: 1px solid #000; */
+            background: white;
+            display: flex;
+            place-items: center;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            position: sticky;
+            left: 0px;
+            z-index: 3;
+
+        }
+
+        .image-select-cont input {
+            cursor: pointer;
+            height: 100%;
+            width: 100%;
+            max-height: 100px;
+            max-width: 100px;
+            background-color: transparent;
+            color: transparent;
+            outline: none;
+            border: none;
+            position: absolute;
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .delete-btn {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            border: none;
+            outline: none;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1><span class="class_count">0</span> Classes </h1>
+    <section class="master-cont">
+
+    </section>
+    <button onclick="addClasses()">Add Class</button>
+
+    </br>
+    <Button onclick="uploadImages()">Submit</Button>
+    <script>
+
+        var imagesArray = []
+
+
+        document.querySelectorAll('.img-cont button').forEach(eachEle => eachEle.addEventListener('click', (e) => {
+            document.querySelector('.count').innerHTML = document.querySelector('.images-cont').children.length - 1;
+        }))
+        function calculateImagesCount(e) {
+            e.target.parentElement.parentElement.parentElement.querySelector('.count').innerHTML = e.target.parentElement.parentElement.parentElement.querySelector('.images-cont').children.length - 1;
+        }
+
+        function test(e) {
+            console.log(e)
+        }
+
+        document.querySelectorAll('.image-select').forEach(ele => ele.addEventListener('change', (e) => {
+            let tempArray = []
+            tempArray = Array.from(e.target.files);
+            test(e.target)
+
+            tempArray.forEach((file) => {
+                if (file && file.type.startsWith('image/')) {
+                    let imageDiv = document.createElement('div');
+                    imageDiv.classList.add('img-cont');
+
+                    let imgElement = document.createElement('img');
+                    imgElement.src = URL.createObjectURL(file);
+                    imgElement.alt = file.name;
+
+                    let removeButton = document.createElement('button');
+                    removeButton.textContent = 'X';
+
+                    removeButton.addEventListener('click', (e) => {
+                        imageDiv.remove();
+                        calculateImagesCount(e)
+                    });
+
+                    imageDiv.appendChild(imgElement);
+                    imageDiv.appendChild(removeButton);
+
+                    e.target.closest('.images-cont').appendChild(imageDiv);
+                    calculateImagesCount(e)
+                }
+            });
+
+
+        }))
+
+        function deleteAll(e) {
+            imagesArray[Number(e.target.parentElement.getAttribute('data-count'))] = []
+            e.target.parentElement.parentElement.querySelector('.count').innerHTML = 0;
+            e.target.parentElement.parentElement.querySelectorAll('.img-cont').forEach(ele => ele.remove())
+            console.log(imagesArray)
+        }
+
+        function deleteClass(e) {
+            if (classesCount < 3) return alert("Atleast 2 classes required")
+            e.parentElement.parentElement.remove()
+            console.log('i: ', i, ', classes: ', --classesCount)
+        }
+
+        var classesCount = 0, i = 0;
+
+
+        function addClasses() {
+            const outerDiv = document.createElement('div');
+
+            const label = document.createElement('label');
+            label.textContent = 'Class Name: ';
+            const input = document.createElement('input');
+            input.setAttribute('name', `class-name${i}`);
+            input.setAttribute('value', `class_name_${i}`);
+            input.classList.add('class-name-input')
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete-class-btn');
+            deleteButton.title = 'Delete Class';
+            deleteButton.textContent = 'X';
+            deleteButton.addEventListener('click', function () {
+                deleteClass(this);
+                document.querySelector('.class_count').innerHTML = classesCount
+            });
+            label.appendChild(input);
+            label.appendChild(deleteButton);
+            outerDiv.appendChild(label);
+
+            outerDiv.appendChild(document.createElement('br'));
+
+            const paragraph = document.createElement('p');
+            paragraph.style.display = 'inline';
+            const imageCountSpan = document.createElement('span');
+            imageCountSpan.classList.add('count');
+            imageCountSpan.textContent = '0';
+            paragraph.appendChild(imageCountSpan);
+            paragraph.innerHTML += ' images selected';
+
+
+            const deleteAllButton = document.createElement('button');
+            deleteAllButton.style.display = 'inline';
+            deleteAllButton.classList.add('delete-btn')
+            deleteAllButton.setAttribute('data-count', i)
+            deleteAllButton.addEventListener('click', (e) => deleteAll(e));
+            const deleteAllImage = document.createElement('img');
+            deleteAllImage.src = './images/assets/delete.png';
+            deleteAllImage.alt = '';
+            deleteAllButton.appendChild(deleteAllImage);
+
+            outerDiv.appendChild(paragraph);
+            outerDiv.appendChild(deleteAllButton);
+
+            const imagesContainer = document.createElement('div');
+            imagesContainer.classList.add('images-cont');
+
+            const imageSelectContainer = document.createElement('div');
+            imageSelectContainer.classList.add('image-select-cont');
+            const imageInput = document.createElement('input');
+            imageInput.title = 'Select Images(.png, .jpg, .jpeg)';
+            imageInput.addEventListener('change', (e) => {
+                tempFilesArr = Array.from(e.target.files);
+                console.log(tempFilesArr);
+                console.log(imagesArray);
+
+                tempFilesArr.forEach((file) => {
+                    if (file && file.type.startsWith('image/')) {
+                        let imageDiv = document.createElement('div');
+                        imageDiv.classList.add('img-cont');
+
+                        let imgElement = document.createElement('img');
+                        imgElement.src = URL.createObjectURL(file);
+                        imgElement.alt = file.name;
+
+                        let removeButton = document.createElement('button');
+                        removeButton.textContent = 'X';
+
+                        removeButton.addEventListener('click', (e) => {
+                            e.target.parentElement.parentElement.parentElement.querySelector('.count').innerHTML = Number(e.target.parentElement.parentElement.parentElement.querySelector('.count').innerHTML) - 1
+                            console.log(imagesArray, e.target.parentElement.parentElement.querySelector('.image-select').getAttribute('data-count'))
+                            imagesArray[imagesArray, e.target.parentElement.parentElement.querySelector('.image-select').getAttribute('data-count')].splice(tempFilesArr.indexOf(file), 1)
+                            console.log(imagesArray)
+                            imageDiv.remove();
+                        });
+
+                        imageDiv.appendChild(imgElement);
+                        imageDiv.appendChild(removeButton);
+                        e.target.closest('.images-cont').appendChild(imageDiv);
+                        calculateImagesCount(e)
+                    }
+                    else {
+                        tempFilesArr.splice(tempFilesArr.indexOf(file), 1)
+                    }
+                });
+                if (imagesArray[Number(e.target.getAttribute('data-count'))] == undefined) {
+                    imagesArray[Number(e.target.getAttribute('data-count'))] = tempFilesArr
+                    console.log('select change tempFilesArr', tempFilesArr)
+                    console.log('select change imagesArray', imagesArray)
+                }
+                else {
+                    imagesArray[Number(e.target.getAttribute('data-count'))].concat(tempFilesArr)
+                    imagesArray[Number(e.target.getAttribute('data-count'))] = new Array(new Set(imagesArray[Number(e.target.getAttribute('data-count'))]))
+                }
+            })
+            console.log(imagesArray)
+            imageInput.classList.add('image-select');
+            imageInput.setAttribute('data-count', i)
+            imageInput.setAttribute('type', 'file');
+            imageInput.setAttribute('multiple', true);
+            imageInput.setAttribute('accept', '.jpg, .png, .jpeg');
+            const plusImage = document.createElement('img');
+            plusImage.src = './images/assets/plus.png';
+            imageSelectContainer.appendChild(imageInput);
+            imageSelectContainer.appendChild(plusImage);
+            imagesContainer.appendChild(imageSelectContainer);
+
+            // Append the images container to the outer div
+            outerDiv.appendChild(imagesContainer);
+
+            // Append the outer div to the document body or another parent element
+            document.querySelector('.master-cont').appendChild(outerDiv);
+
+            i++;
+            classesCount++;
+            document.querySelector('.class_count').innerHTML = classesCount
+            console.log('i: ', i, ', classes: ', classesCount)
+        }
+
+        // function uploadImages() {
+
+        //     document.querySelectorAll('input').forEach(e => e.disabled = true);
+        //     document.querySelectorAll('button').forEach(e => e.disabled = true);
+        //     var formData = new FormData();
+        //     formData.append('classCount', classesCount)
+
+        //     document.querySelectorAll('.class-name-input').forEach(e => console.log(e))
+
+        //     // imagesArray.filter(Boolean)
+
+        //     imagesDataForForm = []
+
+        //     // for (m = 0; m < imagesArray.length; m++) {
+        //     //     console.table(document.querySelectorAll('.class-name-input')[m], imagesArray[m])
+        //     // }
+
+        //     classNamesArray = document.querySelectorAll('.class-name-input')
+
+        //     for (z = 0; z < classNamesArray.length; z++) {
+        //         if (imagesArray[z] == '' || imagesArray[z] == undefined) continue
+        //         imagesDataForForm.push({
+        //             className: classNamesArray[z],
+        //             imgData: imagesArray[z]
+        //         })
+        //     }
+
+        //     formData.append('imgData', imagesDataForForm)
+        //     for (const entry of formData.entries()) {
+        //         console.log(entry[0], JSON.stringify(entry[1]));
+        //     }
+        //     console.log(formData)
+
+
+
+
+        //     fetch("http://localhost:5000/predict", {
+        //         method: "POST",
+        //         body: formData,
+        //     })
+        //         .then((response) => response.json())
+        //         .then((data) => {
+        //             // document.getElementById("result").innerText =
+        //                 // "Predictions: " + JSON.stringify(data.predictions);
+        //                 alert('done')
+        //         })
+        //         .catch((error) => {
+        //             console.error("Error:", error);
+        //         });
+
+        //     // format:
+        //     // {
+        //     //     classCount: x,
+        //     //     userDetails: <data>,
+        //     //      imgData: [
+        //     //     {
+        //     //         className: 'className',
+        //     //         images: []
+        //     //     }
+        //     // ]
+
+        //     // }
+        // }
+
+        function uploadImages() {
+            document.querySelectorAll('input').forEach(e => e.disabled = true);
+            document.querySelectorAll('button').forEach(e => e.disabled = true);
+
+            var formData = new FormData();
+            formData.append('classCount', classesCount);
+
+            var imagesDataForForm = [];
+
+            var classNamesArray = document.querySelectorAll('.class-name-input');
+
+            for (var z = 0; z < classNamesArray.length; z++) {
+                if (imagesArray[z] == '' || imagesArray[z] == undefined) continue;
+                imagesDataForForm.push({
+                    className: classNamesArray[z].value,
+                    images: imagesArray[z]
+                });
+            }
+            var requestData = {
+                classCount: classesCount,
+                imgData: imagesDataForForm
+            };
+
+            // var requestBody = JSON.stringify(requestData);
+            
+            // console.log(imagesDataForForm);
+            // console.log(imagesArray);
+            // console.log(classesCount);
+            // console.log(classNamesArray[0].value);
+            console.table(requestData);
+            fetch("http://localhost:5000/", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                body: requestData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    // alert(data);
+                    console.log(JSON.stringify(data));
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        }
+
+
+
+
+        addClasses()
+        addClasses()
+        document.querySelector('.class_count').innerHTML = classesCount
+    </script>
+</body>
+
+</html>
