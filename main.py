@@ -8,7 +8,7 @@ CORS(app)
 
 @app.route('/')
 def index():
-    return send_file('neww.html')
+    return send_file('index.html')
 
 
 @app.route('/', methods=['POST'])

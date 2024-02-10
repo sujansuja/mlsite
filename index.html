@@ -240,7 +240,7 @@
             deleteAllButton.setAttribute('data-count', i)
             deleteAllButton.addEventListener('click', (e) => deleteAll(e));
             const deleteAllImage = document.createElement('img');
-            deleteAllImage.src = './images/assets/delete.png';
+            deleteAllImage.src = './static/assets/delete.png';
             deleteAllImage.alt = '';
             deleteAllButton.appendChild(deleteAllImage);
 
@@ -305,7 +305,7 @@
             imageInput.setAttribute('multiple', true);
             imageInput.setAttribute('accept', '.jpg, .png, .jpeg');
             const plusImage = document.createElement('img');
-            plusImage.src = './images/assets/plus.png';
+            plusImage.src = './static/assets/plus.png';
             imageSelectContainer.appendChild(imageInput);
             imageSelectContainer.appendChild(plusImage);
             imagesContainer.appendChild(imageSelectContainer);
