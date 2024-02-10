@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, render_template
 import os
 from flask_cors import CORS
 
@@ -11,12 +11,46 @@ def index():
     return send_file('index.html')
 
 
+@app.route('/test', methods=['GET', 'POST'])
+def testing():
+    print(app.root_path)
+    if request.method == 'POST':
+        print("got post request")
+        file = request.files.getlist('class1[]')
+        target = os.path.join(app.root_path, 'static\\img\\class1\\')   
+        if not os.path.isdir(target):
+            os.makedirs(target)
+        for i in file:
+            print(i.filename)
+            file_name = i.filename
+            destination = '/'.join([target, file_name])
+            i.save(destination)
+        file = request.files.getlist('class2[]')
+        target = os.path.join(app.root_path, 'static\\img\\class2\\')   
+        if not os.path.isdir(target):
+            os.makedirs(target)
+        for i in file:
+            print(i.filename)
+            file_name = i.filename
+            destination = '/'.join([target, file_name])
+            i.save(destination)
+
+
+        data = request.form
+        print(data)
+    return render_template('form.html')
+
 @app.route('/', methods=['POST'])
 def handle_post_request():
     if request.method == 'POST':
         print("Recieved POST request")
         try:
-            class_count = request.form.get('classCount', 0)
+            # print(request.form['requestData'])
+            print(request.form)
+            print(request.files)
+            print(request.get_json)
+            class_count = request.json['requestData']['classCount']
+            # class_count = request.form.get('classCount', 0)
             print(f"Class Count: {class_count}")
             img_data = request.files.getlist('imgData[]')
 
@@ -34,7 +68,7 @@ def handle_post_request():
                 image_file.save(filepath)
                 print(f"Saved the file: {filename} to {filepath}")
 
-            return jsonify({'message': 'Files successfully uploaded and processed!'}), 200
+            return jsonify({'message': 'Files successfully uploaded and processed with class count: ' + str(request.json['requestData']['classCount'])}), 200
 
         except Exception as e:
             print(f"Error: {e}")

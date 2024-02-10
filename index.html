@@ -133,10 +133,11 @@
     <section class="master-cont">
 
     </section>
-    <button onclick="addClasses()">Add Class</button>
 
-    </br>
-    <Button onclick="uploadImages()">Submit</Button>
+        <button onclick="addClasses()">Add Class</button>
+        
+        </br>
+        <Button onclick="uploadImages()">Submit</Button>
     <script>
 
         var imagesArray = []
@@ -416,6 +417,7 @@
             // console.log(classesCount);
             // console.log(classNamesArray[0].value);
             console.table(requestData);
+            console.log(JSON.stringify(requestData))
             fetch("http://localhost:5000/", {
                 method: "POST",
                 headers: {
