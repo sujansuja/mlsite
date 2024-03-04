@@ -132,19 +132,20 @@
     <h1><span class="class_count">0</span> Classes </h1>
     <section class="master-cont">
 
-    </section>
 
-        <button onclick="addClasses()">Add Class</button>
-        
-        </br>
-        <Button onclick="uploadImages()">Submit</Button>
+    </section>
+    <button onclick="addClasses()">Add Class</button>
+
+    </br>
+    <Button onclick="uploadImages()">Submit</Button>
     <script>
 
         var imagesArray = []
-
+        var classesCount = 0, i = 0;
 
         document.querySelectorAll('.img-cont button').forEach(eachEle => eachEle.addEventListener('click', (e) => {
             document.querySelector('.count').innerHTML = document.querySelector('.images-cont').children.length - 1;
+            alert("3ew")
         }))
         function calculateImagesCount(e) {
             e.target.parentElement.parentElement.parentElement.querySelector('.count').innerHTML = e.target.parentElement.parentElement.parentElement.querySelector('.images-cont').children.length - 1;
@@ -199,9 +200,6 @@
             e.parentElement.parentElement.remove()
             console.log('i: ', i, ', classes: ', --classesCount)
         }
-
-        var classesCount = 0, i = 0;
-
 
         function addClasses() {
             const outerDiv = document.createElement('div');
@@ -323,78 +321,16 @@
             console.log('i: ', i, ', classes: ', classesCount)
         }
 
-        // function uploadImages() {
-
-        //     document.querySelectorAll('input').forEach(e => e.disabled = true);
-        //     document.querySelectorAll('button').forEach(e => e.disabled = true);
-        //     var formData = new FormData();
-        //     formData.append('classCount', classesCount)
-
-        //     document.querySelectorAll('.class-name-input').forEach(e => console.log(e))
-
-        //     // imagesArray.filter(Boolean)
-
-        //     imagesDataForForm = []
-
-        //     // for (m = 0; m < imagesArray.length; m++) {
-        //     //     console.table(document.querySelectorAll('.class-name-input')[m], imagesArray[m])
-        //     // }
-
-        //     classNamesArray = document.querySelectorAll('.class-name-input')
-
-        //     for (z = 0; z < classNamesArray.length; z++) {
-        //         if (imagesArray[z] == '' || imagesArray[z] == undefined) continue
-        //         imagesDataForForm.push({
-        //             className: classNamesArray[z],
-        //             imgData: imagesArray[z]
-        //         })
-        //     }
-
-        //     formData.append('imgData', imagesDataForForm)
-        //     for (const entry of formData.entries()) {
-        //         console.log(entry[0], JSON.stringify(entry[1]));
-        //     }
-        //     console.log(formData)
-
-
-
-
-        //     fetch("http://localhost:5000/predict", {
-        //         method: "POST",
-        //         body: formData,
-        //     })
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             // document.getElementById("result").innerText =
-        //                 // "Predictions: " + JSON.stringify(data.predictions);
-        //                 alert('done')
-        //         })
-        //         .catch((error) => {
-        //             console.error("Error:", error);
-        //         });
-
-        //     // format:
-        //     // {
-        //     //     classCount: x,
-        //     //     userDetails: <data>,
-        //     //      imgData: [
-        //     //     {
-        //     //         className: 'className',
-        //     //         images: []
-        //     //     }
-        //     // ]
-
-        //     // }
-        // }
-
         function uploadImages() {
+
             document.querySelectorAll('input').forEach(e => e.disabled = true);
             document.querySelectorAll('button').forEach(e => e.disabled = true);
 
-            var formData = new FormData();
-            formData.append('classCount', classesCount);
+            let requestData = new FormData()
+            requestData.append("classCount", classesCount)
 
             var imagesDataForForm = [];
+
 
             var classNamesArray = document.querySelectorAll('.class-name-input');
 
@@ -404,25 +340,26 @@
                     className: classNamesArray[z].value,
                     images: imagesArray[z]
                 });
-            }
-            var requestData = {
-                classCount: classesCount,
-                imgData: imagesDataForForm
-            };
 
-            // var requestBody = JSON.stringify(requestData);
-            
-            // console.log(imagesDataForForm);
-            // console.log(imagesArray);
-            // console.log(classesCount);
-            // console.log(classNamesArray[0].value);
+                requestData.append(`className${z}`, classNamesArray[z].value)
+                for (let y = 0; y < imagesArray[z].length; y++) {
+                    requestData.append(`images${z}`, imagesArray[z][y])
+                }
+
+            }
+            // var requestData = {
+            //     classCount: classesCount,
+            //     imgData: imagesDataForForm
+            // }; 
+
+
+
             console.table(requestData);
-            console.log(JSON.stringify(requestData))
             fetch("http://localhost:5000/", {
                 method: "POST",
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
+                // headers: {
+                //     'Content-Type': 'multipart/form-data'
+                // },
                 body: requestData,
             })
                 .then((response) => response.json())
@@ -434,10 +371,6 @@
                     console.error("Error:", error);
                 });
         }
-
-
-
-
         addClasses()
         addClasses()
         document.querySelector('.class_count').innerHTML = classesCount
